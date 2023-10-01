@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'annotatesystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': BASE_DIR / 'mephi_database',
+        'NAME': 'mephi_database',
         'USER': 'mephi_app',
         'PASSWORD': '123456',
         'HOST': 'localhost',
@@ -126,3 +126,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'annotate_application.MEPHIUser'

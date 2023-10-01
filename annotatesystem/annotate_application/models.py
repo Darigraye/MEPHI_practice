@@ -6,11 +6,11 @@ from transliterate import translit
 
 
 class MEPHIUser(AbstractBaseUser, PermissionsMixin):
-    # бизнес-ключи
+    USERNAME_FIELD = 'login'
+    # бизнес-атрибуты
     login = models.CharField(_("логин"), unique=True, db_comment="Логин пользователя в системе, формируется по первым буквам ФИО")
     email = models.EmailField(_("емейл адрес"), unique=True, null=False, db_comment="Емейл адрес пользователя")
     phone_number = models.CharField(_("номер телефона"), unique=True, null=False, db_comment="Номер телефона", validators=[RegexValidator(r"^\+?\d{1}[-\s]?\(?\d{3}\)?[-\s]?\d{3}([-\s]?\d{2}){2}$")])
-    # бизнес-атрибуты
     first_name = models.CharField(_("имя"), max_length=50, db_comment="Имя пользователя")
     last_name = models.CharField(_("фамилия"), max_length=50, db_comment="Фамилия пользователя")
     patronymic = models.CharField(_("отчество"), max_length=50, null=True, db_comment="Отчество пользователя")
@@ -32,6 +32,7 @@ class MEPHIUser(AbstractBaseUser, PermissionsMixin):
         matched_by_login = self.objects.filter(login__contains=f"{letters_login}").order_by("-date_registrate")
         self.login = letters_login + str(int(matched_by_login[0].login[3:]) + 1) if matched_by_login else letters_login + "1"
         super().save(*args, **kwargs)
+
 
 class MEPHIUserCategory(models.Model):
     category_name = models.CharField(_("category name"), max_length=50, unique=True) # бизнес-ключ
