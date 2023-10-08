@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy, reverse
+from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -45,3 +46,7 @@ class ShowProfileView(LoginRequiredMixin, DetailView):
 class SignOutView(LoginRequiredMixin, LogoutView):
     login_url = reverse_lazy('login')
     template_name = 'auth/logout.html'
+
+
+class HomePageView(TemplateView):
+    template_name = 'general/home_page.html'
