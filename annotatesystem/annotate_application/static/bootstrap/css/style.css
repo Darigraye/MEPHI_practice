@@ -1,0 +1,41 @@
+:root {
+    --color1: #4bb462;
+    --color2: #064213;
+    --color3: #eee;
+}
+
+.login_main_page {
+    background: var(--color3);
+}
+
+.gradient-custom-2 {
+    background: var(--color1);
+    background: -moz-linear-gradient(left, var(--color1) 0%, var(--color2) 100%);
+    background: -webkit-linear-gradient(left, var(--color1) 0%, var(--color2) 100%);
+    background: linear-gradient(to right, var(--color1) 0%, var(--color2) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=var(--color1), endColorstr=var(--color2), GradientType=1);
+}
+
+.itd_enter_btn {
+    background: var(--color1);
+    --bs-btn-border-color: var(--color1);
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-color: var(--color1);
+    --bs-btn-hover-border-color: var(--color1);
+    --bs-btn-active-bg: #fff;
+    --bs-btn-active-color: var(--color1);
+    --bs-btn-active-border-color: var(--color1);
+}
+
+.itd_reg_btn {
+    color: var(--color1);
+    border-color: var(--color1);
+    --bs-btn-hover-bg: var(--color1);
+    --bs-btn-hover-border-color: var(--color1);
+    --bs-btn-active-bg: var(--color1);
+    --bs-btn-active-border-color: var(--color1);
+}
+
+.text-center {
+    font-family:'Unbounded';
+}

@@ -24,9 +24,9 @@ class MEPHIUserCategory(models.Model):
 
 class MEPHIUser(AbstractBaseUser, PermissionsMixin):
     # поля настройки фреймворка
-    USERNAME_FIELD = 'login'
+    USERNAME_FIELD = 'username'
     # бизнес-атрибуты
-    login = models.CharField(_("логин"), unique=True,
+    username = models.CharField(_("логин"), unique=True,
                              db_comment="Логин пользователя в системе, формируется по первым буквам ФИО")
     email = models.EmailField(_("емейл адрес"), unique=True, null=False, db_comment="Емейл адрес пользователя")
     phone_number = models.CharField(_("номер телефона"), unique=True, null=False, db_comment="Номер телефона",
@@ -52,4 +52,4 @@ class MEPHIUser(AbstractBaseUser, PermissionsMixin):
         get_latest_by = "date_registrate"
 
     def get_absolute_url(self):
-        return reverse('profile', kwargs={'login': self.user.login})
+        return reverse('profile', kwargs={'username': self.user.username})

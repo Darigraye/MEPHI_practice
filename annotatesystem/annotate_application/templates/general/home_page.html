@@ -1,39 +1,62 @@
 {% load static %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
+        <title>Демо Bootstrap</title>
+    </head>
+    <body>
+        <section class="vh-100 login_main_page">
+            <div class="container h-100">
+                <div class="row h-100">
+                    <div class="col-12 card text-black mx-5 my-5">
+                        <div class="row h-100">
+                            <div class="col-xl-6 col-sm-12 my-auto px-5 rounded-start">
+                                <div class="text-center">
+                                    <img src="{% static 'pictures/main_logo.png' %}" style="width: 185px;" alt="logo">
+                                    <h4 class="mt-1 mb-5 pb-1">Система аннотирования изображений</h4>
+                                </div>
 
-<link type="text/css" href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet"/>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
+                                <div class="login_form">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <p>Пожалуйста, войдите в свою учетную запись</p>
+
+            <!--                            {{form.as_p}}-->
+                                          <div class="form-outline mb-4">
+                                              {{form.username}}
+                                          </div>
+
+                                          <div class="form-outline mb-4">
+                                              {{form.password}}
+                                          </div>
+
+                                          <div class="text-center pt-1 mb-5 pb-1">
+                                              <button type="submit" class="btn btn-primary btn-block fa-lg itd_enter_btn mb-3" type="button">Войти</button></a>
+                                          </div>
+                                    </form>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-center pb-4">
+                                    <p class="mb-0 me-2">У вас нет учетной записи?</p>
+                                    <button type="button" class="btn btn-outline-primary itd_reg_btn">Зарегистрироваться</button>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-sm-12 d-flex align-items-center gradient-custom-2 rounded-end">
+                                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                                    <h4 class="mb-4">Данная система позволяет</h4>
+                                    <p class="small mb-0">Сопроводительная информация.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    </body>
+</html>

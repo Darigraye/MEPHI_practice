@@ -21,11 +21,11 @@ class SignInView(LoginView):
     redirect_authenticated_user = True
 
     def form_valid(self, form):
-        print(form.get_user().login)
+        print(form.get_user().username)
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("profile", kwargs={"login": self.request.user.login})
+        return reverse("profile", kwargs={"username": self.request.user.username})
 
 
 class ShowProfileView(LoginRequiredMixin, DetailView):
@@ -40,7 +40,7 @@ class ShowProfileView(LoginRequiredMixin, DetailView):
         return context
 
     def get_object(self, queryset=None):
-        return get_object_or_404(MEPHIUser, login=self.kwargs.get('login'))
+        return get_object_or_404(MEPHIUser, username=self.kwargs.get('username'))
 
 
 class SignOutView(LoginRequiredMixin, LogoutView):
