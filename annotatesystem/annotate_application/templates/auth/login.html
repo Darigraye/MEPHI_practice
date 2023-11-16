@@ -6,54 +6,56 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
         <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
-        <title>Демо Bootstrap</title>
+        <title>Login page</title>
     </head>
-    <body>
-        <section class="vh-100 login_main_page">
-            <div class="container h-100">
-                <div class="row h-100">
-                    <div class="col-12 card text-black mx-5 my-5">
+    <body class="login_main_page">
+        <section class="vh-100">
+            <div class="container vh-100 mx-auto">
+                <div class="row h-100 mx-auto">
+                    <div class="col-12 mx-auto my-5">
                         <div class="row h-100">
-                            <div class="col-xl-6 col-sm-12 my-auto px-5 rounded-start">
-                                <div class="text-center">
-                                    <img src="{% static 'pictures/main_logo.png' %}" style="width: 185px;" alt="logo">
-                                    <h4 class="mt-1 mb-5 pb-1">Система аннотирования изображений</h4>
-                                </div>
+                            <div class="col-xl-6 col-sm-12 h-100 login_card d-flex justify-content-center align-items-center">
+                                <div class="d-flex flex-column align-items-center">
+                                    <div class="text-center">
+                                        <img src="{% static 'pictures/main_logo.png' %}" style="width: 185px;" alt="logo">
+                                        <h4 class="mt-1 mb-5 pb-1">Система аннотирования изображений</h4>
+                                    </div>
 
-                                <div class="login_form">
-                                    <form method="post">
-                                        {% csrf_token %}
-                                        <p>Пожалуйста, войдите в свою учетную запись</p>
+                                    <div class="login_form">
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <p>Пожалуйста, войдите в свою учетную запись</p>
 
-                                        <div class="form-outline mb-4">
-                                            {{form.username}}
-                                        </div>
-
-                                        <div class="form-outline mb-4">
-                                            {{form.password}}
-                                        </div>
-
-<!--                                        <div class="form-error">{{ form.non_field_errors }}</div>-->
-                                        {% if form.non_field_errors %}
-                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                                  <div>Неверное имя пользователя или пароль!</div>
-                                                  <button type="button" class="btn-close btn-lg float-end" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                                            <div class="form-outline mb-4">
+                                                {{form.username}}
                                             </div>
-                                        {% endif %}
 
-                                        <div class="text-center pt-1 mb-5 pb-1">
-                                            <button type="submit" class="btn btn-primary btn-block fa-lg itd_enter_btn mb-3" type="button">Войти</button></a>
-                                        </div>
+                                            <div class="form-outline mb-4">
+                                                {{form.password}}
+                                            </div>
 
-                                    </form>
-                                </div>
+    <!--                                        <div class="form-error">{{ form.non_field_errors }}</div>-->
+                                            {% if form.non_field_errors %}
+                                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                      <div>Неверное имя пользователя или пароль!</div>
+                                                      <button type="button" class="btn-close btn-lg float-end" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                                                </div>
+                                            {% endif %}
 
-                                <div class="d-flex align-items-center justify-content-center pb-4">
-                                    <p class="mb-0 me-2">У вас нет учетной записи?</p>
-                                    <a href="{% url 'signup' %}"><button type="button" class="btn btn-outline-primary itd_reg_btn">Зарегистрироваться</button></a>
+                                            <div class="text-center pt-1 mb-5 pb-1">
+                                                <button type="submit" class="btn btn-primary btn-block fa-lg itd_enter_btn mb-3" type="button">Войти</button>
+                                            </div>
+
+                                        </form>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-center pb-4">
+                                        <p class="mb-0 me-2">У вас нет учетной записи?</p>
+                                        <a href="{% url 'signup' %}"><button type="button" class="btn btn-outline-primary itd_reg_btn">Зарегистрироваться</button></a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-xl-6 col-sm-12 d-flex align-items-center gradient-custom-2 rounded-end">
+                            <div class="gradient-custom-2 col-xl-6 col-sm-12 d-flex align-items-center">
                                 <div class="text-white px-3 py-4 p-md-5 mx-md-4">
                                     <h4 class="mb-4">Данная система позволяет</h4>
                                     <p class="small mb-0">Сопроводительная информация.</p>

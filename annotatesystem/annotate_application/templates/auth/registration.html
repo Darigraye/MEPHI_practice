@@ -1,21 +1,85 @@
-{% extends '../general/base.html' %}
-{% block content %}
-<form method="POST" novalidate>
-	{% csrf_token %}
-	<h2>Sign Up</h2>
+{% load static %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
+        <title>Registration page</title>
+    </head>
+	<body class="registration_main_page">
+        <section>
+            <div class="container h-100">
+                <div class="row h-100">
+                    <div class="card registration_card col-8 mt-5 mx-auto">
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-center">
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <img src="{% static 'pictures/main_logo.png' %}" style="width: 185px;" alt="logo">
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <h4 class="text-center mt-1 mb-2 pb-1">Система аннотирования изображений</h4>
+                                    </div>
+                                </div>
 
-	{% for field in form %}
-	<p>
-	 	{{ field.label_tag }} {{ field }}
-			{% if field.errors %}
-		<ul class="errorlist">
-			{% for error in field.errors %}
-			<li><font color="#ff0000">{{ error }}</font></li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-	</p>
-	{% endfor %}
-	<input type="submit" value="Register" />
-</form>
-{% endblock content%}
+                            </div>
+                        </div>
+                        <form method="POST" novalidate>
+                        {% csrf_token %}
+                            <div class="row">
+                                <div class="col-12 d-flex justify-content-center">
+                                    <h2 class="title text-center">Форма регистрации</h2>
+                                </div>
+                            </div>
+                            <div class="row px-4">
+                                <div class="col-md-6 col-sm-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Фамилия</label>
+                                    <input class="form-control mb-3" type="text" name="first_name">
+                                </div>
+
+                                <div class="col-md-6 col-sm-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Имя</label>
+                                    <input class="form-control mb-3" type="text" name="last_name">
+                                </div>
+
+                                <div class="col-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Отчество</label>
+                                    <input class="form-control mb-3" type="text" name="patronymic">
+                                </div>
+
+                                <div class=" col-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Email</label>
+                                    <input class="form-control mb-3" type="text" name="email">
+                                </div>
+
+                                <div class=" col-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Телефон</label>
+                                    <input class="form-control mb-3" type="text" name="phone_number">
+                                </div>
+
+                                <div class=" col-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Пароль</label>
+                                    <input class="form-control mb-3" type="password" name="password1">
+                                </div>
+
+                                <div class=" col-12 d-flex flex-column">
+                                    <label class="plain_text reg_label">Подтвердите пароль</label>
+                                    <input class="form-control mb-3" type="password" name="password2">
+                                </div>
+
+                                <div class="text-center pt-1 mb-5 pb-1">
+                                    <button type="submit" class="btn btn-primary btn-block fa-lg itd_enter_btn " type="button">Зарегистрироваться</button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    </body>
+</html>
+
