@@ -6,6 +6,14 @@ from django.urls import reverse
 from django.core.validators import RegexValidator
 
 
+def image_directory_path(instance, filename):
+    return f"image/%Y/%m/%d/{instance.t_md5}-{filename}"
+
+
+def cell_directory_path(instance, filename):
+    return f"cell/%Y/%m/%d/{instance.t_md5}-{filename}"
+
+
 class SCD2ModelMixin:
     begin_date = models.DateTimeField(_("Дата начала актуальности записи"), auto_now_add=True,
                                       db_comment="Дата начала актуальности записи")
@@ -168,3 +176,139 @@ class ResearchResult(models.Model):
         verbose_name_plural = _("результаты исследования")
 
 
+class PatientResearch(models.Model):
+    date_begin = models.DateTimeField(_("дата начала исследования"), db_comment="дата начала исследования")
+    date_end = models.DateTimeField(_("дата окончания исследования"), db_comment="дата окончания исследования")
+    patient = models.ForeignKey(Patient, related_name="research", on_delete=models.PROTECT)
+    researcher = models.ForeignKey(MEPHIUser, related_name="research", on_delete=models.PROTECT)
+
+    class Meta:
+        db_table = "al_patient_research"
+        db_table_comment = "справочник исследования пациента"
+        verbose_name = _("исследование")
+        verbose_name_plural = _("исследования")
+
+
+class Medication(models.Model):
+    MEDICATION_TYPES = [
+        ('1', 'Тип 1'),
+        ('2', 'Тип 2'),
+        ('3', 'Тип 3')
+    ]
+
+    medication_type = models.CharField(_("Тип препарата"), choices=MEDICATION_TYPES, db_comment="Тип препарата")
+    patient_research = models.ForeignKey(PatientResearch, related_name="medication", on_delete=models.PROTECT)
+
+    class Meta:
+        db_table = "al_medication"
+        db_table_comment = "справочник препаратов"
+        verbose_name = _("препарат")
+        verbose_name_plural = _("препараты")
+
+
+class Immunophenotyping(models.Model):
+    marker = models.ForeignKey(Marker, related_name="immunophenotyping", on_delete=models.PROTECT)
+    medication = models.ForeignKey(Medication, related_name="immunophenotyping", on_delete=models.PROTECT)
+    research = models.ForeignKey(PatientResearch, related_name="immunophenotyping", on_delete=models.PROTECT)
+    percent_positive_cells = models.IntegerField(_("Процент антиген-позитивных клеток"), db_comment="Процент антиген-позитивных клеток")
+
+    class Meta:
+        db_table = "al_immunophenotyping"
+        db_table_comment = "справочник иммунофенотипирования"
+        verbose_name = _("данные иммунофенотипирования")
+        verbose_name_plural = _("данные иммунофенотипирования")
+
+
+class CellImage(models.Model, SCD2ModelMixin):
+    image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
+    medication = models.ForeignKey(Medication, related_name="cellimage", on_delete=models.PROTECT)
+    scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
+
+    class Meta:
+        db_table = "al_cell_image"
+        db_table_comment = "справочник изображений клеток"
+        verbose_name = _("изображение клетки")
+        verbose_name_plural = _("изображения клеток")
+
+
+class SystemSettings(models.Model):
+    GLASS_TYPES = [
+        ('1', 'Тип 1'),
+        ('2', 'Тип 2'),
+        ('3', 'Тип 3')
+    ]
+
+    medication = models.ForeignKey(Medication, related_name="systemsettings", on_delete=models.PROTECT)
+    conditions = models.TextField(_("Условия подготовки препарата"), db_comment="Условия подготовки препарата")
+    glass_type = models.CharField(_("Тип стекла"),  choices=GLASS_TYPES, db_comment="Тип стекла")
+    artifacts = models.TextField(_("Артефакты"), db_comment="Артефакты")
+
+    class Meta:
+        db_table = "al_settings"
+        db_table_comment = "настройки системы"
+        verbose_name = _("параметр системы")
+        verbose_name_plural = _("параметр системы")
+
+
+class CellMarking(models.Model):
+    image = models.ForeignKey(CellImage, related_name="cellmarking", on_delete=models.PROTECT)
+    marking = models.ForeignKey(Marking, related_name="cellmarking", on_delete=models.PROTECT)
+    comment = models.TextField(_("Комментарий"), blank=True, db_comment="Комментарий")
+
+    class Meta:
+        db_table = "al_cell_marking"
+        db_table_comment = "маркировка изображения"
+        unique_together = ('image', 'marking')
+
+
+class Cell(models.Model):
+    CELL_TYPES = [
+        ('1', 'Тип 1'),
+        ('2', 'Тип 2'),
+        ('3', 'Тип 3')
+    ]
+
+    marking = models.ForeignKey(CellMarking, related_name="cell", on_delete=models.PROTECT)
+    image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
+    scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
+    cell_type = models.CharField(_("Тип клетки"),  choices=CELL_TYPES, db_comment="Тип клетки")
+
+    class Meta:
+        db_table = "al_cell"
+        db_table_comment = "справочник клеток"
+        verbose_name = _("клетка")
+        verbose_name_plural = _("клетки")
+
+
+class CellCharacteristic(models.Model):
+    dictcharcteristics = models.ForeignKey(DictCellsCharacteristics, related_name="cellcharacteristic", on_delete=models.PROTECT)
+    cell = models.ForeignKey(Cell, related_name="cellcharacteristic", on_delete=models.PROTECT)
+    value = models.CharField(_("Значение"), db_comment="Значение")
+
+    class Meta:
+        db_table = "al_cell_characteristic"
+        db_table_comment = "справочник характеристик клеток"
+        verbose_name = _("характеристика")
+        verbose_name_plural = _("характиристики")
+
+
+class MorphologicalResearch(models.Model):
+    RESEARCH_TYPES = [
+        ('1', 'Тип 1'),
+        ('2', 'Тип 2'),
+        ('3', 'Тип 3')
+    ]
+
+    research_obj = models.ForeignKey(ResearchedObject, related_name="morfresearch", on_delete=models.PROTECT)
+    medication = models.ForeignKey(Medication, related_name="morfresearch", on_delete=models.PROTECT)
+    number_cells = models.IntegerField(_("Количество клеток"), db_comment="Количество клеток")
+    leukocyte = models.BooleanField(_("Лейкоцит"), db_comment="Лейкоцит")
+    research_type = models.CharField(_("Тип исследования"),  choices=RESEARCH_TYPES, db_comment="Тип клетки")
+    value = models.CharField(_("Значение"), db_comment="Значение")
+    description = models.TextField(_("Описание"), blank=True, db_comment="Описание")
+
+    class Meta:
+        db_table = "al_morfological"
+        db_table_comment = "справочник морфологического исследования"
+        verbose_name = _("морфологическое исследование")
+        verbose_name_plural = _("морфологические исследования")
