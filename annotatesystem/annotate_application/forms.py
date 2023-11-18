@@ -12,18 +12,18 @@ class DateInput(forms.DateInput):
 
 
 class SignUpForm(UserCreationForm):
-    password1 = forms.CharField(max_length=60, widget=forms.PasswordInput)
-    password2 = forms.CharField(max_length=60, widget=forms.PasswordInput)
+    password1 = forms.CharField(label="Пароль",max_length=60, widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Подтвердите пароль",max_length=60, widget=forms.PasswordInput)
 
     def save(self, commit=True):
         data = self.cleaned_data
         letters_login = translit(data['first_name'], reversed=True)[0] + \
                         translit(data['last_name'], reversed=True)[0] + \
                         translit(data['patronymic'], reversed=True)[0] + "_"
-        matched_by_login = MEPHIUser.objects.filter(login__contains=f"{letters_login}").order_by("-date_registrate")
-        data['login'] = letters_login + str(
-            int(matched_by_login[0].login[4:]) + 1) if matched_by_login else letters_login + "1"
-        user = MEPHIUser(login=data['login'],
+        matched_by_login = MEPHIUser.objects.filter(username__contains=f"{letters_login}").order_by("-date_registrate")
+        data['username'] = letters_login + str(
+            int(matched_by_login[0].username[4:]) + 1) if matched_by_login else letters_login + "1"
+        user = MEPHIUser(username=data['username'],
                          email=data['email'],
                          phone_number=data['phone_number'],
                          first_name=data['first_name'],
@@ -42,12 +42,12 @@ class SignUpForm(UserCreationForm):
 
 
 class SignInForm(AuthenticationForm):
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control', "placeholder": "Login",'type': "text"}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', "placeholder": "Password",  'type':"password"}))
 
     class Meta:
         model = MEPHIUser
-        fields = ('login', 'password')
-
+        fields = ('username', 'password')
 
 class CreatePatientForm(forms.ModelForm):
     class Meta:
