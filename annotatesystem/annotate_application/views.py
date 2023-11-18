@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from .forms import SignUpForm, SignInForm
+from .forms import SignUpForm, SignInForm, CreatePatientForm
 from .models import MEPHIUser, MEPHIUserCategory
 
 
@@ -21,11 +21,11 @@ class SignInView(LoginView):
     redirect_authenticated_user = True
 
     def form_valid(self, form):
-        print(form.get_user().login)
+        print(form.get_user().username)
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("profile", kwargs={"login": self.request.user.login})
+        return reverse("profile", kwargs={"username": self.request.user.username})
 
 
 class ShowProfileView(LoginRequiredMixin, DetailView):
@@ -40,7 +40,7 @@ class ShowProfileView(LoginRequiredMixin, DetailView):
         return context
 
     def get_object(self, queryset=None):
-        return get_object_or_404(MEPHIUser, login=self.kwargs.get('login'))
+        return get_object_or_404(MEPHIUser, username=self.kwargs.get('username'))
 
 
 class SignOutView(LoginRequiredMixin, LogoutView):
@@ -50,3 +50,8 @@ class SignOutView(LoginRequiredMixin, LogoutView):
 
 class HomePageView(TemplateView):
     template_name = 'general/home_page.html'
+
+
+class CreatePatientView(CreateView):
+    form_class = CreatePatientForm
+    template_name = "general/create_user.html"

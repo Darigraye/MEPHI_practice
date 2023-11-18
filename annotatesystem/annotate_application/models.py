@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
+from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.core.validators import RegexValidator
@@ -24,9 +25,9 @@ class MEPHIUserCategory(models.Model):
 
 class MEPHIUser(AbstractBaseUser, PermissionsMixin):
     # поля настройки фреймворка
-    USERNAME_FIELD = 'login'
+    USERNAME_FIELD = 'username'
     # бизнес-атрибуты
-    login = models.CharField(_("логин"), unique=True,
+    username = models.CharField(_("логин"), unique=True,
                              db_comment="Логин пользователя в системе, формируется по первым буквам ФИО")
     email = models.EmailField(_("емейл адрес"), unique=True, null=False, db_comment="Емейл адрес пользователя")
     phone_number = models.CharField(_("номер телефона"), unique=True, null=False, db_comment="Номер телефона",
@@ -52,4 +53,24 @@ class MEPHIUser(AbstractBaseUser, PermissionsMixin):
         get_latest_by = "date_registrate"
 
     def get_absolute_url(self):
-        return reverse('profile', kwargs={'login': self.user.login})
+        return reverse('profile', kwargs={'username': self.user.username})
+
+class Patient(models.Model):
+    # бизнес-атрибуты
+    number_ill_history = models.IntegerField(_("номер истории болезни"), db_comment="Номер истории болезни")
+    first_name = models.CharField(_("имя"), max_length=50, db_comment="Имя пользователя")
+    last_name = models.CharField(_("фамилия"), max_length=50, db_comment="Фамилия пользователя")
+    patronymic = models.CharField(_("отчество"), max_length=50, null=True, db_comment="Отчество пользователя")
+    birthday = models.DateTimeField(_("дата рождения"), db_comment="Дата рождения")
+    sex = models.BooleanField(_("пол"), db_comment="Пол 1 - мужской, 0 - женский")
+    # тех. поля версионирования
+    begin_date = models.DateTimeField(_("Дата начала актуальности записи"),auto_now_add=True, db_comment="Дата начала актуальности записи")
+    end_date = models.DateTimeField(_("Дата окончания актуальности записи"), null=True, db_comment="Дата окончания актуальности записи")
+    t_changed = models.IntegerField(_("Состояние записи"), db_comment="Состояние записи 0 - добавлена, 1 - изменена 2 - удалена")
+    t_md5 = models.CharField(_("Хэш"), max_length=32, db_comment="Хэш")
+
+    class Meta:
+        db_table = "al_patient"
+        db_table_comment = "таблица пациентов"
+        verbose_name = _("пациент")
+        verbose_name_plural = _("пациенты")
