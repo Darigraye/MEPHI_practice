@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from .forms import SignUpForm, SignInForm
+from .forms import SignUpForm, SignInForm, CreatePatientForm
 from .models import MEPHIUser, MEPHIUserCategory
 
 
@@ -50,3 +50,8 @@ class SignOutView(LoginRequiredMixin, LogoutView):
 
 class HomePageView(TemplateView):
     template_name = 'general/home_page.html'
+
+
+class CreatePatientView(CreateView):
+    form_class = CreatePatientForm
+    template_name = "general/create_user.html"

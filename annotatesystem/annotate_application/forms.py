@@ -1,8 +1,14 @@
+from hashlib import shake_256
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from transliterate import translit
+from .models import Patient
 
 from .models import MEPHIUser
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 
 class SignUpForm(UserCreationForm):
@@ -41,3 +47,30 @@ class SignInForm(AuthenticationForm):
     class Meta:
         model = MEPHIUser
         fields = ('login', 'password')
+
+
+class CreatePatientForm(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ('number_ill_history', 'first_name', 'last_name', 'patronymic', 'birthday', 'sex')
+        widgets = {
+            'birthday': DateInput(),
+        }
+
+    def save(self, commit=True):
+        data = self.cleaned_data
+        hashed_str = str(data['number_ill_history']) + data['first_name'] + data['last_name'] + data['patronymic'] + str(data[
+                'birthday']) + str(data['sex'])
+        data['t_md5'] = shake_256(hashed_str.encode()).hexdigest(16)
+        data['t_changed'] = '0'
+        patient = Patient(number_ill_history=data['number_ill_history'],
+                          first_name=data['first_name'],
+                          last_name=data['last_name'],
+                          patronymic=data['patronymic'],
+                          birthday=data['birthday'],
+                          sex=data['sex'],
+                          t_md5=data['t_md5'],
+                          t_changed=data['t_changed'])
+        if commit:
+            patient.save()
+        return patient
