@@ -74,13 +74,18 @@ class MEPHIUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Patient(models.Model):
+    SEX_TYPE = [
+        (1, 'Мужчина'),
+        (0, 'Женщина')
+    ]
+
     # бизнес-атрибуты
     number_ill_history = models.IntegerField(_("номер истории болезни"), db_comment="Номер истории болезни")
     first_name = models.CharField(_("имя"), max_length=50, db_comment="Имя пользователя")
     last_name = models.CharField(_("фамилия"), max_length=50, db_comment="Фамилия пользователя")
     patronymic = models.CharField(_("отчество"), max_length=50, null=True, db_comment="Отчество пользователя")
     birthday = models.DateTimeField(_("дата рождения"), db_comment="Дата рождения")
-    sex = models.BooleanField(_("пол"), db_comment="Пол 1 - мужской, 0 - женский")
+    sex = models.IntegerField(_("пол"), choices=SEX_TYPE, db_comment="Пол 1 - мужской, 0 - женский")
 
     class Meta:
         db_table = "al_patient"

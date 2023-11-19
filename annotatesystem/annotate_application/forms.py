@@ -12,8 +12,8 @@ class DateInput(forms.DateInput):
 
 
 class SignUpForm(UserCreationForm):
-    password1 = forms.CharField(label="Пароль",max_length=60, widget=forms.PasswordInput)
-    password2 = forms.CharField(label="Подтвердите пароль",max_length=60, widget=forms.PasswordInput)
+    password1 = forms.CharField(label="Пароль", max_length=60, widget=forms.PasswordInput)
+    password2 = forms.CharField(label="Подтвердите пароль", max_length=60, widget=forms.PasswordInput)
 
     def save(self, commit=True):
         data = self.cleaned_data
@@ -42,14 +42,24 @@ class SignUpForm(UserCreationForm):
 
 
 class SignInForm(AuthenticationForm):
-    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control', "placeholder": "Login",'type': "text"}))
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control', "placeholder": "Password",  'type':"password"}))
+    username = forms.CharField(label='Логин', widget=forms.TextInput(
+        attrs={'class': 'form-control', "placeholder": "Login", 'type': "text"}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(
+        attrs={'class': 'form-control', "placeholder": "Password", 'type': "password"}))
 
     class Meta:
         model = MEPHIUser
         fields = ('username', 'password')
 
+
 class CreatePatientForm(forms.ModelForm):
+    SEX_TYPE = [
+        (1, 'Мужчина'),
+        (0, 'Женщина')
+    ]
+
+    sex = forms.ChoiceField(choices=SEX_TYPE)
+
     class Meta:
         model = Patient
         fields = ('number_ill_history', 'first_name', 'last_name', 'patronymic', 'birthday', 'sex')
@@ -59,8 +69,9 @@ class CreatePatientForm(forms.ModelForm):
 
     def save(self, commit=True):
         data = self.cleaned_data
-        hashed_str = str(data['number_ill_history']) + data['first_name'] + data['last_name'] + data['patronymic'] + str(data[
-                'birthday']) + str(data['sex'])
+        hashed_str = str(data['number_ill_history']) + data['first_name'] + data['last_name'] + data[
+            'patronymic'] + str(data[
+                                    'birthday']) + str(data['sex'])
         data['t_md5'] = shake_256(hashed_str.encode()).hexdigest(16)
         data['t_changed'] = '0'
         patient = Patient(number_ill_history=data['number_ill_history'],
@@ -68,9 +79,8 @@ class CreatePatientForm(forms.ModelForm):
                           last_name=data['last_name'],
                           patronymic=data['patronymic'],
                           birthday=data['birthday'],
-                          sex=data['sex'],
-                          t_md5=data['t_md5'],
-                          t_changed=data['t_changed'])
+                          sex=data['sex']
+                          )
         if commit:
             patient.save()
         return patient

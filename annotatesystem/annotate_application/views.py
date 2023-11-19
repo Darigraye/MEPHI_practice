@@ -6,7 +6,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from .forms import SignUpForm, SignInForm, CreatePatientForm
-from .models import MEPHIUser, MEPHIUserCategory
+from .models import *
 
 
 class SignUpView(CreateView):
@@ -55,3 +55,11 @@ class HomePageView(TemplateView):
 class CreatePatientView(CreateView):
     form_class = CreatePatientForm
     template_name = "general/create_user.html"
+    success_url = reverse_lazy('add_patient')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Patient.objects.all()
+        return super().get_context_data(**kwargs)
+
+
+
