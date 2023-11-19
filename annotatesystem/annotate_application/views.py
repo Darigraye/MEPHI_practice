@@ -1,3 +1,4 @@
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView
@@ -5,7 +6,7 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
-from .forms import SignUpForm, SignInForm, CreatePatientForm
+from .forms import *
 from .models import *
 
 
@@ -62,4 +63,12 @@ class CreatePatientView(CreateView):
         return super().get_context_data(**kwargs)
 
 
+class CreateDiagnosisView(CreateView):
+    form_class = CreateDiagnosisForm
+    template_name = "general/create_diagnosis.html"
+    success_url = reverse_lazy('add_patient')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = ResearchResult.objects.all()
+        return super().get_context_data(**kwargs)
 

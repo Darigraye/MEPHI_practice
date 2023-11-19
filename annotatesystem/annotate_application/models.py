@@ -87,6 +87,9 @@ class Patient(models.Model):
     birthday = models.DateTimeField(_("дата рождения"), db_comment="Дата рождения")
     sex = models.IntegerField(_("пол"), choices=SEX_TYPE, db_comment="Пол 1 - мужской, 0 - женский")
 
+    def __str__(self):
+        return str(self.number_ill_history)
+
     class Meta:
         db_table = "al_patient"
         db_table_comment = "таблица пациентов"
@@ -173,6 +176,8 @@ class ResearchedObject(models.Model):
 
 class ResearchResult(models.Model):
     conclusion = models.TextField(_("Заключение"), db_comment="Заключение")
+    research = models.ForeignKey("PatientResearch", related_name="researchresult", null=True, on_delete=models.PROTECT)
+    patient = models.ForeignKey("Patient", related_name="researchresult", null=True, on_delete=models.PROTECT)
 
     class Meta:
         db_table = "al_research_result"
@@ -246,7 +251,7 @@ class SystemSettings(models.Model):
     medication = models.ForeignKey(Medication, related_name="systemsettings", on_delete=models.PROTECT)
     conditions = models.TextField(_("Условия подготовки препарата"), db_comment="Условия подготовки препарата")
     glass_type = models.CharField(_("Тип стекла"),  choices=GLASS_TYPES, db_comment="Тип стекла")
-    artifacts = models.TextField(_("Артефакты"), db_comment="Артефакты")
+    artifacts = models.IntegerField(_("Артефакты"), db_comment="Артефакты")
 
     class Meta:
         db_table = "al_settings"

@@ -2,7 +2,7 @@ from hashlib import shake_256
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from transliterate import translit
-from .models import Patient
+from .models import *
 
 from .models import MEPHIUser
 
@@ -84,3 +84,9 @@ class CreatePatientForm(forms.ModelForm):
         if commit:
             patient.save()
         return patient
+
+
+class CreateDiagnosisForm(forms.ModelForm):
+    class Meta:
+        model = ResearchResult
+        fields = ('conclusion', 'patient')
