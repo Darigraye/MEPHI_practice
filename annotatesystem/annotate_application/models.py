@@ -33,6 +33,9 @@ class MEPHIUserCategory(models.Model):
         return cls.objects.get_or_create(category_name="Пользователь",
                                          defaults=dict(description="Стандартный пользователь. Имеет права на чтение общедоступных справочников"))[0].pk
 
+    def __str__(self):
+        return self.category_name
+
     class Meta:
         db_table = "al_user_category"
         db_table_comment = "таблица категорий пользователей"
@@ -58,9 +61,34 @@ class MEPHIUser(AbstractBaseUser, PermissionsMixin):
     # тех. поля
     date_registrate = models.DateTimeField(_("дата регистрации"), auto_now_add=True,
                                            db_comment="Дата регистрации пользователя")
+    is_active = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
 
     # менеджер для запросов к бд
     objects = UserManager()
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        # Simplest possible answer: Yes, always
+        return True
+
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        # Simplest possible answer: All admins are staff
+        return self.is_admin
+
+    @is_staff.setter
+    def is_staff(self, value):
+        self.is_admin = value
+
+    def __str__(self):
+        return self.username
 
     class Meta:
         db_table = "al_user"
@@ -88,7 +116,7 @@ class Patient(models.Model):
     sex = models.IntegerField(_("пол"), choices=SEX_TYPE, db_comment="Пол 1 - мужской, 0 - женский")
 
     def __str__(self):
-        return str(self.number_ill_history)
+        return f"{self.first_name} {self.last_name}, номер истории болезни: {self.number_ill_history}"
 
     class Meta:
         db_table = "al_patient"
@@ -106,6 +134,9 @@ class Marker(models.Model):
 
     marker_name = models.CharField(_("название маркера"), max_length=50, db_comment="Название маркера")
     marker_type = models.CharField(_("Тип маркера"), max_length=2, choices=MARKER_TYPES, db_comment="Тип маркера")
+
+    def __str__(self):
+        return self.marker_name
 
     class Meta:
         db_table = "al_marker"
@@ -128,6 +159,9 @@ class Marking(models.Model):
     y2 = models.IntegerField(_("Y2"), db_comment="Y2")
     description = models.TextField(_("Описание"), blank=True, db_comment="Описание")
 
+    def __str__(self):
+        return self.description
+
     class Meta:
         db_table = "al_marking"
         db_table_comment = "таблица маркировок"
@@ -140,6 +174,9 @@ class Terms(models.Model, SCD2ModelMixin):
     definition = models.TextField(_("Определение"), db_comment="Определение")
     description = models.TextField(_("Описание"), blank=True, db_comment="Описание")
 
+    def __str__(self):
+        return self.term_name
+
     class Meta:
         db_table = "al_term"
         db_table_comment = "таблица терминов и определений"
@@ -149,6 +186,9 @@ class Terms(models.Model, SCD2ModelMixin):
 
 class DictCellsCharacteristics(models.Model):
     characteristic_name = models.CharField(_("Наименование характеристики"), db_comment="Наименование характеристики")
+
+    def __str__(self):
+        return self.characteristic_name
 
     class Meta:
         db_table = "al_dict_cell_characteristic"
@@ -167,6 +207,9 @@ class ResearchedObject(models.Model):
     sprout_type = models.CharField(_("Тип ростка"), choices=SPROUT_TYPES, db_comment="Тип ростка")
     norm = models.CharField(_("Норма"), db_comment="Норма")
 
+    def __str__(self):
+        return self.sprout_type
+
     class Meta:
         db_table = "al_researched_object"
         db_table_comment = "справочник объектов исследования"
@@ -178,6 +221,9 @@ class ResearchResult(models.Model):
     conclusion = models.TextField(_("Заключение"), db_comment="Заключение")
     research = models.ForeignKey("PatientResearch", related_name="researchresult", null=True, on_delete=models.PROTECT)
     patient = models.ForeignKey("Patient", related_name="researchresult", null=True, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.conclusion
 
     class Meta:
         db_table = "al_research_result"
@@ -191,6 +237,9 @@ class PatientResearch(models.Model):
     date_end = models.DateTimeField(_("дата окончания исследования"), db_comment="дата окончания исследования")
     patient = models.ForeignKey(Patient, related_name="research", on_delete=models.PROTECT)
     researcher = models.ForeignKey(MEPHIUser, related_name="research", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return f"{self.date_begin}-{self.date_end}"
 
     class Meta:
         db_table = "al_patient_research"
@@ -209,6 +258,9 @@ class Medication(models.Model):
     medication_type = models.CharField(_("Тип препарата"), choices=MEDICATION_TYPES, db_comment="Тип препарата")
     patient_research = models.ForeignKey(PatientResearch, related_name="medication", on_delete=models.PROTECT)
 
+    def __str__(self):
+        return self.medication_type
+
     class Meta:
         db_table = "al_medication"
         db_table_comment = "справочник препаратов"
@@ -222,6 +274,9 @@ class Immunophenotyping(models.Model):
     research = models.ForeignKey(PatientResearch, related_name="immunophenotyping", on_delete=models.PROTECT)
     percent_positive_cells = models.IntegerField(_("Процент антиген-позитивных клеток"), db_comment="Процент антиген-позитивных клеток")
 
+    def __str__(self):
+        return self.percent_positive_cells
+
     class Meta:
         db_table = "al_immunophenotyping"
         db_table_comment = "справочник иммунофенотипирования"
@@ -233,6 +288,9 @@ class CellImage(models.Model, SCD2ModelMixin):
     image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
     medication = models.ForeignKey(Medication, related_name="cellimage", on_delete=models.PROTECT)
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
+
+    def __str__(self):
+        return self.image
 
     class Meta:
         db_table = "al_cell_image"
@@ -253,6 +311,9 @@ class SystemSettings(models.Model):
     glass_type = models.CharField(_("Тип стекла"),  choices=GLASS_TYPES, db_comment="Тип стекла")
     artifacts = models.IntegerField(_("Артефакты"), db_comment="Артефакты")
 
+    def __str__(self):
+        return self.conditions
+
     class Meta:
         db_table = "al_settings"
         db_table_comment = "настройки системы"
@@ -265,10 +326,15 @@ class CellMarking(models.Model):
     marking = models.ForeignKey(Marking, related_name="cellmarking", on_delete=models.PROTECT)
     comment = models.TextField(_("Комментарий"), blank=True, db_comment="Комментарий")
 
+    def __str__(self):
+        return self.comment
+
     class Meta:
         db_table = "al_cell_marking"
         db_table_comment = "маркировка изображения"
         unique_together = ('image', 'marking')
+        verbose_name = _("маркировка клетки")
+        verbose_name_plural = _("маркировки клеток")
 
 
 class Cell(models.Model):
@@ -283,6 +349,9 @@ class Cell(models.Model):
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
     cell_type = models.CharField(_("Тип клетки"),  choices=CELL_TYPES, db_comment="Тип клетки")
 
+    def __str__(self):
+        return self.image
+
     class Meta:
         db_table = "al_cell"
         db_table_comment = "справочник клеток"
@@ -294,6 +363,9 @@ class CellCharacteristic(models.Model):
     dictcharcteristics = models.ForeignKey(DictCellsCharacteristics, related_name="cellcharacteristic", on_delete=models.PROTECT)
     cell = models.ForeignKey(Cell, related_name="cellcharacteristic", on_delete=models.PROTECT)
     value = models.CharField(_("Значение"), db_comment="Значение")
+
+    def __str__(self):
+        return self.value
 
     class Meta:
         db_table = "al_cell_characteristic"
@@ -316,6 +388,9 @@ class MorphologicalResearch(models.Model):
     research_type = models.CharField(_("Тип исследования"),  choices=RESEARCH_TYPES, db_comment="Тип клетки")
     value = models.CharField(_("Значение"), db_comment="Значение")
     description = models.TextField(_("Описание"), blank=True, db_comment="Описание")
+
+    def __str__(self):
+        return self.description
 
     class Meta:
         db_table = "al_morfological"
