@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import TemplateView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView, FormView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -80,4 +80,24 @@ class CreateCellTypeView(CreateView):
 
     def get_context_data(self, **kwargs):
         kwargs['object_list'] = CellType.objects.all()
+        return super().get_context_data(**kwargs)
+
+
+class AddImageView(CreateView):
+    form_class = AddImageForm
+    template_name = "general/create_image.html"
+    success_url = reverse_lazy('add_image')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = CellImage.objects.all()
+        return super().get_context_data(**kwargs)
+
+
+class AddMedicationView(CreateView):
+    form_class = AddMedicationForm
+    template_name = "general/create_medication.html"
+    success_url = reverse_lazy('add_medication')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Medication.objects.all()
         return super().get_context_data(**kwargs)

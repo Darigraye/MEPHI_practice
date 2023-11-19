@@ -249,13 +249,7 @@ class PatientResearch(models.Model):
 
 
 class Medication(models.Model):
-    MEDICATION_TYPES = [
-        ('1', 'Тип 1'),
-        ('2', 'Тип 2'),
-        ('3', 'Тип 3')
-    ]
-
-    medication_type = models.CharField(_("Тип препарата"), choices=MEDICATION_TYPES, db_comment="Тип препарата")
+    medication_type = models.CharField(_("Тип препарата"), db_comment="Тип препарата")
     patient_research = models.ForeignKey(PatientResearch, related_name="medication", on_delete=models.PROTECT)
 
     def __str__(self):
@@ -287,6 +281,7 @@ class Immunophenotyping(models.Model):
 class CellImage(models.Model, SCD2ModelMixin):
     image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
     medication = models.ForeignKey(Medication, related_name="cellimage", on_delete=models.PROTECT)
+    patient = models.ForeignKey(Patient, related_name='cellimage', null=True, on_delete=models.PROTECT)
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
 
     def __str__(self):
@@ -395,6 +390,9 @@ class MorphologicalResearch(models.Model):
 
 class CellType(models.Model):
     type_name = models.CharField(_("Название типа"), max_length=50, db_comment="Название типа")
+
+    def __str__(self):
+        return self.type_name
 
     class Meta:
         db_table = "al_cell_type"

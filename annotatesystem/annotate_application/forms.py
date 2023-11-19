@@ -96,3 +96,16 @@ class CreateCellTypeForm(forms.ModelForm):
     class Meta:
         model = CellType
         fields = ('type_name',)
+
+
+class AddImageForm(forms.ModelForm):
+    class Meta:
+        model = CellImage
+        fields = ('patient', 'image', 'medication', 'scale')
+
+
+class AddMedicationForm(forms.ModelForm):
+    class Meta:
+        model = Medication
+        fields = ('medication_type', 'patient_research')
+

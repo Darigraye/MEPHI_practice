@@ -10,5 +10,7 @@ urlpatterns = [
     path('add_patient/', CreatePatientView.as_view(), name='add_patient'),
     path('add_diagnosis/', CreateDiagnosisView.as_view(), name='add_diagnosis'),
     path('add_cell_type/', CreateCellTypeView.as_view(), name='add_cell_type'),
+    path('add_image/', AddImageView.as_view(), name='add_image'),
+    path('add_medication/', AddMedicationView.as_view(), name='add_medication'),
     path('<str:username>/', ShowProfileView.as_view(), name='profile')
 ]

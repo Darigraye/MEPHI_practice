@@ -1,7 +1,8 @@
 {% block content %}
-<form method="POST" novalidate >
+<form method="POST" enctype="multipart/form-data">
 	{% csrf_token %}
 	<h2>Createe user</h2>
+
 		
 	{% for field in form %}
 	<p>
@@ -21,6 +22,6 @@
 Добавленные пациенты. Данил, тут крч я хочу, чтобы на одной странице мы могли как добавить пациента, так и посмотреть, уже добвленных, т.е. сначала идет форма, затем список пациентов
 
 	{% for o in object_list %}
-		{{o.medication_type}}  {{ o.patient_research }} <br>
+		{{o.pk}}  {{ o.patient }} {{ o.image }} {{ o.medication }} {{ o.scale }}
 	{% endfor %}
 {% endblock content%}
