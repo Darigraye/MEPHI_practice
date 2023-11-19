@@ -90,3 +90,9 @@ class CreateDiagnosisForm(forms.ModelForm):
     class Meta:
         model = ResearchResult
         fields = ('conclusion', 'patient')
+
+
+class CreateCellTypeForm(forms.ModelForm):
+    class Meta:
+        model = CellType
+        fields = ('type_name',)

@@ -66,9 +66,18 @@ class CreatePatientView(CreateView):
 class CreateDiagnosisView(CreateView):
     form_class = CreateDiagnosisForm
     template_name = "general/create_diagnosis.html"
-    success_url = reverse_lazy('add_patient')
+    success_url = reverse_lazy('add_diagnosis')
 
     def get_context_data(self, **kwargs):
         kwargs['object_list'] = ResearchResult.objects.all()
         return super().get_context_data(**kwargs)
 
+
+class CreateCellTypeView(CreateView):
+    form_class = CreateCellTypeForm
+    template_name = "general/create_cell_type.html"
+    success_url = reverse_lazy('add_cell_type')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = CellType.objects.all()
+        return super().get_context_data(**kwargs)

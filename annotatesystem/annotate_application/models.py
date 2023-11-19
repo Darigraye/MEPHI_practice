@@ -338,16 +338,10 @@ class CellMarking(models.Model):
 
 
 class Cell(models.Model):
-    CELL_TYPES = [
-        ('1', 'Тип 1'),
-        ('2', 'Тип 2'),
-        ('3', 'Тип 3')
-    ]
-
     marking = models.ForeignKey(CellMarking, related_name="cell", on_delete=models.PROTECT)
     image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
-    cell_type = models.CharField(_("Тип клетки"),  choices=CELL_TYPES, db_comment="Тип клетки")
+    cell_type = models.ForeignKey("CellType",  related_name="cell", on_delete=models.PROTECT)
 
     def __str__(self):
         return self.image
@@ -397,3 +391,13 @@ class MorphologicalResearch(models.Model):
         db_table_comment = "справочник морфологического исследования"
         verbose_name = _("морфологическое исследование")
         verbose_name_plural = _("морфологические исследования")
+
+
+class CellType(models.Model):
+    type_name = models.CharField(_("Название типа"), max_length=50, db_comment="Название типа")
+
+    class Meta:
+        db_table = "al_cell_type"
+        db_table_comment = "справочник типов клеток"
+        verbose_name = _("тип клетки")
+        verbose_name_plural = _("типы клетки")
