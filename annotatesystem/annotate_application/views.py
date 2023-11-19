@@ -55,7 +55,7 @@ class HomePageView(TemplateView):
 
 class CreatePatientView(CreateView):
     form_class = CreatePatientForm
-    template_name = "general/create_user.html"
+    template_name = "functions/create_user.html"
     success_url = reverse_lazy('add_patient')
 
     def get_context_data(self, **kwargs):

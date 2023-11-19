@@ -9,21 +9,25 @@
         <title>Login page</title>
     </head>
     <body>
-        <header>
-            <div class="container">
+        <header class="my_header">
+            <div class="container-fluid">
                 <div class="row">
-                    <div class="col-4 logo">
-                        <a href="{% url 'home' %}" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
-                            <img src="{% static 'pictures/main_logo.png' %}" class="bi me-2" width="100" height="100" alt="MainLogo">
+                    <div class="col-1 my-2 logo">
+                        <a class="picture-link" href="{% url 'home' %} ">
+                            <img src="{% static 'pictures/main_logo.png' %}" class="bi me-2" width="60" height="60" alt="MainLogo">
                         </a>
                     </div>
-                    <div class="col-4 additional">
-
+                    <div class="col-8 my-2 additional d-flex align-items-center justify-content-start">
+                        <a  class="change-color-link me-4" href="{% url 'add_patient' %}">Добавление нового пациента</a>
+                        <a  class="change-color-link me-4" href="{% url 'add_diagnosis' %}">Добавление новго диагноза</a>
+                        <a  class="change-color-link me-4" href="{% url 'logout' %}">Просмотр данных по пациентам</a>
+                        <a  class="change-color-link me-4" href="{% url 'logout' %}">Добавление нового типа клетки</a>
+                        <a  class="change-color-link" href="{% url 'logout' %}">Просмотр добавленных препаратов</a>
                     </div>
-                    <div class="col-4 panel">
-                        <a  href="{% url 'logout'  %}"><button type="button" class="btn btn-primary">Админ панель</button></a>
-                        <a  href="{% url 'profile' %}"><button type="button" class="btn btn-primary">Профиль</button></a>
-                        <a  href="{% url 'logout'  %}"><button type="button" class="btn btn-primary">Выйти</button></a>
+                    <div class="col-3 my-2 panel plain_text d-flex justify-content-end align-items-center">
+                        <a  href="{% url 'admin:index'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Админ панель</button></a>
+                        <a  href="{% url 'logout' %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Профиль</button></a>
+                        <a  href="{% url 'logout'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Выйти</button></a>
                     </div>
                 </div>
             </div>

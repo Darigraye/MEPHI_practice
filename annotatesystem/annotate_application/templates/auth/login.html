@@ -35,7 +35,12 @@
                                             </div>
 
     <!--                                        <div class="form-error">{{ form.non_field_errors }}</div>-->
-
+                                            {% if form.non_field_errors %}
+                                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                      <div>Неверное имя пользователя или пароль!</div>
+                                                      <button type="button" class="btn-close btn-lg float-end" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                                                </div>
+                                            {% endif %}
 
                                             <div class="text-center pt-1 mb-5 pb-1">
                                                 <button type="submit" class="btn btn-primary btn-block fa-lg itd_enter_btn mb-3" type="button">Войти</button>
