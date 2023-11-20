@@ -24,4 +24,8 @@
 	{% for o in object_list %}
 		{{o.pk}}  {{o.number_ill_history}} {{o.first_name}} {{o.last_name}} {{o.patronymic}} {{o.birthday}}
 	{% endfor %}
+
+	{% if not user.is_anonymous %}
+		<a href="{% url 'profile' user.username %}"> lol </a>
+	{% endif %}
 {% endblock content%}
