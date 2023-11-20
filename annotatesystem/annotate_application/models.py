@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.core.validators import RegexValidator
 
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+
 
 def image_directory_path(instance, filename):
     return f"image/%Y/%m/%d/{instance.t_md5}-{filename}"
@@ -399,3 +403,58 @@ class CellType(models.Model):
         db_table_comment = "справочник типов клеток"
         verbose_name = _("тип клетки")
         verbose_name_plural = _("типы клетки")
+
+
+class SystemLog(models.Model):
+    LOG_TYPE = [
+        ('I', "INFO"),
+        ('D', "DEBUG"),
+        ('E', "ERROR")
+    ]
+    STATUS_TYPE = [
+        ('S', 'START'),
+        ('F', 'FINISH')
+    ]
+
+    object_sender = models.CharField(_("Логируемый объект"), max_length=50, db_comment="Логируемый объект")
+    log_type = models.CharField(_("Тип лога"), max_length=1, choices=LOG_TYPE, db_comment="Тип лога")
+    action_text = models.CharField(_("Краткое описание действия"), max_length=100, db_comment="Краткое описание действия")
+    description = models.TextField(_("Полное описание действия"), blank=True, db_comment="Полное описание действия")
+    t_cdatetime = models.DateTimeField(_("Время создания записи"), auto_now_add=True, db_comment="Время создания записи")
+    al_username = models.CharField(_("Имя пользователя, инициирующего действие"), db_comment="Имя пользователя, инициирующего действие")
+    status_type = models.CharField(_("Статус выполнения"), max_length=1, choices=STATUS_TYPE, db_comment="Статус выполнения")
+
+    def __str__(self):
+        return f"{self.object_sender}-({self.log_type}): {self.action_text} {self.t_cdatetime}"
+
+    class Meta:
+        db_table = "al_log"
+        db_table_comment = "Журнал логирования"
+        verbose_name = _("Журнал логирования")
+        verbose_name_plural = _("Журнал логирования")
+
+
+class SystemParameters(models.Model):
+    parameter_name = models.CharField(_("Имя параметра"), max_length=50, db_comment="Имя параметра")
+    parameter_value = models.TextField(_("Значение, принимаемое параметром"), blank=True, db_comment="Значение, принимаемое параметром")
+    parameter_value_bool = models.BooleanField(_("Да/Нет"), blank=True, db_comment="Да/Нет")
+    t_cdatetime = models.DateTimeField(_("Дата создания параметра"), auto_now_add=True, db_comment="Дата создания параметра")
+    t_isactive = models.BooleanField(_("Параметр активен"), db_comment="Параметр активен")
+
+    class Meta:
+        db_table = "al_parameter"
+        db_table_comment = "Справочник системных параметров приложения"
+        verbose_name = _("Справочник системных параметров приложения")
+        verbose_name_plural = _("Справочник системных параметров приложения")
+
+
+@receiver(pre_save, sender=CellType)
+def cell_type_save(sender, instance, *args, **kwargs):
+    log = SystemLog(object_sender="CellType",
+                    log_type="I",
+                    action_text="Сохранение нового типа клетки",
+                    description=f"Сохранение нового типа клетки: {instance.type_name}",
+                    al_username="commita_bu",
+                    status_type="S"
+                    )
+    log.save()
