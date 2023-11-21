@@ -441,6 +441,9 @@ class SystemParameters(models.Model):
     t_cdatetime = models.DateTimeField(_("Дата создания параметра"), auto_now_add=True, db_comment="Дата создания параметра")
     t_isactive = models.BooleanField(_("Параметр активен"), db_comment="Параметр активен")
 
+    def __str__(self):
+        return self.parameter_name
+
     class Meta:
         db_table = "al_parameter"
         db_table_comment = "Справочник системных параметров приложения"
@@ -448,13 +451,251 @@ class SystemParameters(models.Model):
         verbose_name_plural = _("Справочник системных параметров приложения")
 
 
+param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+
+
 @receiver(pre_save, sender=CellType)
 def cell_type_save(sender, instance, *args, **kwargs):
-    log = SystemLog(object_sender="CellType",
-                    log_type="I",
-                    action_text="Сохранение нового типа клетки",
-                    description=f"Сохранение нового типа клетки: {instance.type_name}",
-                    al_username="commita_bu",
-                    status_type="S"
-                    )
-    log.save()
+    if param:
+        log = SystemLog(object_sender="CellType",
+                        log_type="I",
+                        action_text="Сохранение нового типа клетки",
+                        description=f"Сохранение нового типа клетки: {instance.type_name}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=MorphologicalResearch)
+def morf_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="MorphologicalResearch",
+                        log_type="I",
+                        action_text="Сохранение морфологического исследования",
+                        description=f"Сохранение морфологического исследования {instance.description}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=CellCharacteristic)
+def cell_characteristic_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="CellCharacteristic",
+                        log_type="I",
+                        action_text="Сохранение характеристики клетки",
+                        description=f"Сохранение характеристики клетки со значением {instance.value}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Cell)
+def cell_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Cell",
+                        log_type="I",
+                        action_text="Сохранение клетки",
+                        description=f"Сохранение  клетки типа {instance.cell_type}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=CellMarking)
+def cell_marking_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="CellMarking",
+                        log_type="I",
+                        action_text="Сохранение маркировки клетки",
+                        description=f"Сохранение маркировки клетки типа {instance.comment}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=SystemSettings)
+def system_settings_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="SystemSettings",
+                        log_type="I",
+                        action_text="Сохранение системных настроек",
+                        description=f"Сохранение системных настроек",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=CellImage)
+def cell_image_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="CellImage",
+                        log_type="I",
+                        action_text="Сохранение изображения клетки",
+                        description=f"Сохранение изображения клетки {instance.image}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Immunophenotyping)
+def immunophenotyping_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Immunophenotyping",
+                        log_type="I",
+                        action_text="Сохранение иммунофенотипа",
+                        description=f"Сохранение иммунофенотипа, процент положительных клеток равен {instance.percent_positive_cells}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Medication)
+def medication_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Medication",
+                        log_type="I",
+                        action_text="Сохранение препарата",
+                        description=f"Сохранение препарата {instance.medication_type}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=PatientResearch)
+def patient_research_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="PatientResearch",
+                        log_type="I",
+                        action_text="Сохранение исследование пациента",
+                        description=f"Сохранение исследование пациента с идентификатором {instance.pk}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=ResearchResult)
+def research_result_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="ResearchResult",
+                        log_type="I",
+                        action_text="Сохранение заключения",
+                        description=f"Сохранение заключения {instance.conclusion}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=ResearchedObject)
+def research_object_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="ResearchedObject",
+                        log_type="I",
+                        action_text="Сохранение исследуемого объекта",
+                        description=f"Сохранение заключения {instance.conclusion}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=DictCellsCharacteristics)
+def dict_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="DictCellsCharacteristics",
+                        log_type="I",
+                        action_text="Сохранение характеристики клетки",
+                        description=f"Сохранение характеристики клетки {instance.characteristic_name}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Terms)
+def terms_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Terms",
+                        log_type="I",
+                        action_text="Сохранение определения",
+                        description=f"Сохранение определения {instance.term_name}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Marking)
+def marking_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Marking",
+                        log_type="I",
+                        action_text="Сохранение маркировки",
+                        description=f"Сохранение маркировки с координатами: ({instance.x1}, {instance.y1}) ({instance.x2}, {instance.y2})",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Marker)
+def marker_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Marker",
+                        log_type="I",
+                        action_text="Сохранение маркера",
+                        description=f"Сохранение маркера {instance.marker_name}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=Patient)
+def patient_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="Patient",
+                        log_type="I",
+                        action_text="Сохранение пациента",
+                        description=f"Сохранение пациента {instance.first_name} {instance.last_name} {instance.patronymic} номер истории болезни: {instance.number_ill_history}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=MEPHIUser)
+def user_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="MEPHIUser",
+                        log_type="I",
+                        action_text="Сохранение/обновление информации о пользователе в базе данных",
+                        description=f"Сохранение/обновление информации о пользователе в базе данных в базе данных {instance.first_name} {instance.last_name} {instance.patronymic} email: {instance.email}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
+
+
+@receiver(pre_save, sender=MEPHIUserCategory)
+def user_category_save(sender, instance, *args, **kwargs):
+    if param:
+        log = SystemLog(object_sender="MEPHIUserCategory",
+                        log_type="I",
+                        action_text="Сохранение новой категории пользователя в базе данных",
+                        description=f"Сохранение пользователя в базе данных {instance.first_name} {instance.last_name} {instance.patronymic} email: {instance.email}",
+                        al_username="commita_bu",
+                        status_type="S"
+                        )
+        log.save()
