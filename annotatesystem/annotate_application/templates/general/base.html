@@ -19,15 +19,22 @@
                     </div>
                     <div class="col-8 my-2 additional d-flex align-items-center justify-content-start">
                         <a  class="change-color-link me-4" href="{% url 'add_patient' %}">Добавление нового пациента</a>
-                        <a  class="change-color-link me-4" href="{% url 'add_diagnosis' %}">Добавление новго диагноза</a>
-                        <a  class="change-color-link me-4" href="{% url 'logout' %}">Просмотр данных по пациентам</a>
-                        <a  class="change-color-link me-4" href="{% url 'logout' %}">Добавление нового типа клетки</a>
-                        <a  class="change-color-link" href="{% url 'logout' %}">Просмотр добавленных препаратов</a>
+                        <a  class="change-color-link me-4" href="{% url 'add_diagnosis' %}">Добавление нового диагноза</a>
+                        <a  class="change-color-link me-4" href="{% url 'add_image' %}">Добавление нового изображения</a>
+                        <a  class="change-color-link me-4" href="{% url 'add_cell_type' %}">Добавление нового типа клетки</a>
+                        <a  class="change-color-link" href="{% url 'add_medication' %}">Просмотр добавленных препаратов</a>
                     </div>
                     <div class="col-3 my-2 panel plain_text d-flex justify-content-end align-items-center">
-                        <a  href="{% url 'admin:index'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Админ панель</button></a>
-                        <a  href="{% url 'logout' %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Профиль</button></a>
-                        <a  href="{% url 'logout'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Выйти</button></a>
+                        {% if not user.is_anonymous %}
+                            {% if user.is_admin %}
+                                <a  href="{% url 'admin:index'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Админ панель</button></a>
+                            {% endif %}
+                            <a  href="{% url 'profile' user.username %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Профиль</button></a>
+                            <a  href="{% url 'logout'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Выйти</button></a>
+                        {% else %}
+                            <a  href="{% url 'login'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Войти</button></a>
+                            <a  href="{% url 'signup'  %}"><button type="button" class="btn btn-outline-primary itd_shap_btn me-2">Зарегистрироваться</button></a>
+	                    {% endif %}
                     </div>
                 </div>
             </div>

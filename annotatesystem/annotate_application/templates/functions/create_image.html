@@ -1,0 +1,176 @@
+{% extends '../general/base.html' %}
+{% load static %}
+{% block content %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
+        <title>Create patient page</title>
+    </head>
+		<body class="patient_body">
+			<section>
+				<div class="container">
+					<div class="row my-5">
+						{% for o in object_list %}
+							<div class="card col-md-6 col-sm-12 d-flex flex-column">
+								<div class="row">
+									<div class="col-6">
+										<div class="row">
+											<div class="col-12 d-flex justify-content-start">
+												<label class="plain_text">
+													#{{o.pk}}
+												</label>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-12 d-flex justify-content-start">
+												<label class="plain_text">
+													Номер истории болезни: {{o.patient.number_ill_history}}
+												</label>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-12 d-flex justify-content-start">
+												<label class="plain_text">
+													ФИО: {{o.patient.first_name}} {{o.patient.last_name}} {{o.patient.patronymic}}
+												</label>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-12 d-flex justify-content-start">
+												<label class="plain_text">
+													Тип препарата: {{o.medication}}
+												</label>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-12 d-flex justify-content-start">
+												<label class="plain_text">
+													Масштаб: {{o.scale}}x
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="col-6">
+										<div class="row my-3">
+											<div class="col-12 d-flex justify-content-start">
+												{% if o.image %}
+													<img src={{ o.image.url }} class="bi" data-bs-toggle="modal" data-bs-target="#big_picture{{o.pk}}" width="200" height="200">
+												{% endif %}
+											</div>
+											<div class="modal fade" id="big_picture{{o.pk}}" tabindex="-1" aria-labelledby="big_picture_label" aria-hidden="true">
+												<div class="modal-dialog modal-fullscreen">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title" id="big_picture_label">Изображение</h5>
+															<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+														</div>
+														<div class="modal-body">
+															<div class="row mx-3">
+																<div class="col-12">
+																	{% if o.image %}
+																		<img src={{ o.image.url }} class="bi" width="100%" height="100%" alt="asdasd">
+																	{% endif %}
+																</div>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						{% endfor %}
+					</div>
+					<div class="row">
+						<div class="col-12 mb-5 d-flex justify-content-center">
+							<button type="button" class="btn btn-primary btn-block itd_enter_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+								Добавление нового изображения
+							</button>
+						</div>
+						<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<form method="POST" enctype="multipart/form-data">
+										{% csrf_token %}
+									<div class="modal-header">
+										<h5 class="modal-title" id="exampleModalLabel">Добавление нового изображения</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+									</div>
+									<div class="modal-body">
+										<div class="row px-4">
+											<div class=" col-12 d-flex flex-column">
+												<label class="plain_text reg_label">Пациент</label>
+												<select class="form-select mb-3" type="text" name="patient">
+													{% for pat in form.patient %}
+														{{ pat }}
+													{% endfor %}
+
+												</select>
+												{% if form.patient.errors %}
+												<div class="alert alert-danger alert-dismissible fade show" role="alert">
+													  <div>Выберите корректного пациента!</div>
+													  <button type="button" class="btn-close btn-lg float-end" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+												</div>
+												{% endif %}
+											</div>
+										</div>
+
+										<div class="row px-4">
+											<div class=" col-12 d-flex flex-column">
+												<label class="plain_text reg_label">Тип препарата</label>
+												<select class="form-select mb-3" type="text" name="medication">
+													{% for pat in form.medication %}
+														{{ pat }}
+													{% endfor %}
+
+												</select>
+												{% if form.medication.errors %}
+												<div class="alert alert-danger alert-dismissible fade show" role="alert">
+													  <div>Выберите корректный тип препарата!</div>
+													  <button type="button" class="btn-close btn-lg float-end" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+												</div>
+												{% endif %}
+											</div>
+										</div>
+
+										<div class="row px-4">
+											<div class=" col-12 d-flex flex-column">
+												<label class="plain_text reg_label">Масштаб</label>
+												<input class="form-control mb-3" type="text" name="scale">
+											</div>
+										</div>
+
+										<div class="row px-4">
+											<div class=" col-12 d-flex flex-column">
+												<label class="plain_text reg_label">Загрузите изображение</label>
+												<input class="form-control mb-3" type="file" name="image">
+											</div>
+										</div>
+
+									</div>
+									<div class="modal-footer d-flex justify-content-start">
+										<button type="submit" class="btn btn-primary btn-block itd_enter_btn">Создать</button>
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+									</div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+			{% endblock content%}
+    </body>
+</html>
+
+
+
+

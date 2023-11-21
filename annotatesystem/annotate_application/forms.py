@@ -1,6 +1,7 @@
 from hashlib import shake_256
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.forms import ModelChoiceField
 from transliterate import translit
 from .models import *
 
@@ -105,7 +106,9 @@ class AddImageForm(forms.ModelForm):
 
 
 class AddMedicationForm(forms.ModelForm):
+    # patient_research = ModelChoiceField(queryset=PatientResearch.objects.all()) # Or whatever query you'd like
+
     class Meta:
         model = Medication
-        fields = ('medication_type', 'patient_research')
+        fields = ('medication_type', 'patient', 'patient_research')
 
