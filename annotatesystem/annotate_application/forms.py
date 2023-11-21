@@ -100,15 +100,81 @@ class CreateCellTypeForm(forms.ModelForm):
 
 
 class AddImageForm(forms.ModelForm):
+    def save(self, commit=True):
+        data = self.cleaned_data
+        hashed_str = str(data['medication']) + str(data['scale']) + str(data['patient'])
+        data['t_md5'] = shake_256(hashed_str.encode()).hexdigest(16)
+        data['t_changed'] = '0'
+        patient = CellImage(medication=data['medication'],
+                            image=data['image'],
+                          scale=data['scale'],
+                          patient=data['patient'],
+                          t_md5=data['t_md5'],
+                          t_changed=data['t_changed']
+                          )
+        if commit:
+            patient.save()
+        return patient
+
     class Meta:
         model = CellImage
         fields = ('patient', 'image', 'medication', 'scale')
 
 
 class AddMedicationForm(forms.ModelForm):
-    # patient_research = ModelChoiceField(queryset=PatientResearch.objects.all()) # Or whatever query you'd like
-
     class Meta:
         model = Medication
         fields = ('medication_type', 'patient', 'patient_research')
+
+
+class AddDictForm(forms.ModelForm):
+    class Meta:
+        model = DictCellsCharacteristics
+        fields = ('characteristic_name', )
+
+
+class AddTermForm(forms.ModelForm):
+    class Meta:
+        model = Terms
+        fields = ('term_name', 'definition', 'definition')
+
+
+class AddCellCharacteristicForm(forms.ModelForm):
+    class Meta:
+        model = CellCharacteristic
+        fields = ('dictcharcteristics', 'cell', 'value')
+
+
+class AddSystemSettingsForm(forms.ModelForm):
+    class Meta:
+        model = SystemSettings
+        fields = ('medication', 'conditions', 'glass_type', 'artifacts')
+
+
+class AddPatientResearchForm(forms.ModelForm):
+    class Meta:
+        model = PatientResearch
+        fields = ('date_begin', 'date_end', 'patient', 'researcher')
+        widgets = {
+            'date_begin': DateInput(),
+            'date_end': DateInput(),
+        }
+
+
+class AddMarkerForm(forms.ModelForm):
+    class Meta:
+        model = Marker
+        fields = ('marker_name', 'marker_type')
+
+
+class AddImmunophenotypingForm(forms.ModelForm):
+    class Meta:
+        model = Immunophenotyping
+        fields = ('marker', 'medication', 'research', 'percent_positive_cells')
+
+
+class AddResearchedObjectForm(forms.ModelForm):
+    class Meta:
+        model = ResearchedObject
+        fields = ('count_object', 'sprout_type', 'norm')
 

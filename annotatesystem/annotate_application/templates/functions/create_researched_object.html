@@ -1,0 +1,30 @@
+{% extends '../general/base.html' %}
+{% load static %}
+
+{% block content %}
+<form method="POST" novalidate>
+	{% csrf_token %}
+	<h2>Createe user</h2>
+
+
+	{% for field in form %}
+	<p>
+		{% if field.errors %}
+		<ul class="errorlist">
+			{% for error in field.errors %}
+			<li>{{ error }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	 	{{ field.label_tag }} {{ field }}
+	</p>
+	{% endfor %}
+	<input type="submit" value="Register" />
+</form>
+
+
+	{% for o in object_list %}
+		{{o.count_object}}  {{o.sprout_type}} {{o.norm}}
+	{% endfor %}
+
+{% endblock content%}

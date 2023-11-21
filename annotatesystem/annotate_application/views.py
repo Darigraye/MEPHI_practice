@@ -16,6 +16,14 @@ class SignUpView(CreateView):
     success_url = reverse_lazy("login")
     template_name = "auth/registration.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        is_active = SystemParameters.objects.get(parameter_name="REGISTRATION").t_isactive
+        param = SystemParameters.objects.get(parameter_name="REGISTRATION").parameter_value_bool
+        context['registration'] = param if is_active else None
+        return context
+
+
 
 class SignInView(LoginView):
     form_class = SignInForm
@@ -133,3 +141,106 @@ class AddResearchView(CreateView, MetaDataMixin):
 
         return dict(list(context.items()) + list(additional_context.items()))
 
+
+class AddDictView(CreateView, MetaDataMixin):
+    form_class = AddDictForm
+    template_name = "functions/create_dict.html"
+    success_url = reverse_lazy('add_dict_characteristics')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = DictCellsCharacteristics.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddTermsView(CreateView, MetaDataMixin):
+    form_class = AddTermForm
+    template_name = "functions/create_term.html"
+    success_url = reverse_lazy('add_terms')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Terms.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddCellCharacteristicView(CreateView, MetaDataMixin):
+    form_class = AddCellCharacteristicForm
+    template_name = "functions/create_cell_characteristic.html"
+    success_url = reverse_lazy('add_cell_characteristic')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = CellCharacteristic.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddSystemSettingsView(CreateView, MetaDataMixin):
+    form_class = AddSystemSettingsForm
+    template_name = "functions/create_system_settings.html"
+    success_url = reverse_lazy('add_system_settings')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = SystemSettings.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddPatientResearchView(CreateView, MetaDataMixin):
+    form_class = AddPatientResearchForm
+    template_name = "functions/create_patient_research.html"
+    success_url = reverse_lazy('add_patient_research')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = PatientResearch.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddMarkerView(CreateView, MetaDataMixin):
+    form_class = AddMarkerForm
+    template_name = "functions/create_marker.html"
+    success_url = reverse_lazy('add_marker')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Marker.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddImmunoView(CreateView, MetaDataMixin):
+    form_class = AddImmunophenotypingForm
+    template_name = "functions/create_immuno.html"
+    success_url = reverse_lazy('add_marker')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Immunophenotyping.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddResearchedObject(CreateView, MetaDataMixin):
+    form_class = AddResearchedObjectForm
+    template_name = "functions/create_researched_object.html"
+    success_url = reverse_lazy('add_marker')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = ResearchedObject.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))

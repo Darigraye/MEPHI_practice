@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.db.models import UniqueConstraint
@@ -9,9 +10,8 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
 
-
 def image_directory_path(instance, filename):
-    return f"image/%Y/%m/%d/{instance.t_md5}-{filename}"
+    return f"image/{datetime.date.today().year}/{datetime.date.today().month}/{datetime.date.today().day}/{instance.t_md5}-{filename}"
 
 
 def cell_directory_path(instance, filename):
@@ -283,11 +283,19 @@ class Immunophenotyping(models.Model):
         verbose_name_plural = _("данные иммунофенотипирования")
 
 
-class CellImage(models.Model, SCD2ModelMixin):
+class CellImage(models.Model):
     image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
     medication = models.ForeignKey(Medication, related_name="cellimage", on_delete=models.PROTECT)
     patient = models.ForeignKey(Patient, related_name='cellimage', null=True, on_delete=models.PROTECT)
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
+
+    begin_date = models.DateTimeField(_("Дата начала актуальности записи"), auto_now_add=True, null=True,
+                                      db_comment="Дата начала актуальности записи")
+    end_date = models.DateTimeField(_("Дата окончания актуальности записи"), null=True,
+                                    db_comment="Дата окончания актуальности записи")
+    t_changed = models.IntegerField(_("Состояние записи"), null=True,
+                                    db_comment="Состояние записи 0 - добавлена, 1 - изменена 2 - удалена")
+    t_md5 = models.CharField(_("Хэш"), null=True, max_length=32, db_comment="Хэш")
 
     def __str__(self):
         return self.image
@@ -452,12 +460,11 @@ class SystemParameters(models.Model):
         verbose_name_plural = _("Справочник системных параметров приложения")
 
 
-param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
-
-
 @receiver(pre_save, sender=CellType)
 def cell_type_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="CellType",
                         log_type="I",
                         action_text="Сохранение нового типа клетки",
@@ -470,7 +477,9 @@ def cell_type_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=MorphologicalResearch)
 def morf_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="MorphologicalResearch",
                         log_type="I",
                         action_text="Сохранение морфологического исследования",
@@ -483,7 +492,9 @@ def morf_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=CellCharacteristic)
 def cell_characteristic_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="CellCharacteristic",
                         log_type="I",
                         action_text="Сохранение характеристики клетки",
@@ -496,7 +507,9 @@ def cell_characteristic_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Cell)
 def cell_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Cell",
                         log_type="I",
                         action_text="Сохранение клетки",
@@ -509,7 +522,9 @@ def cell_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=CellMarking)
 def cell_marking_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="CellMarking",
                         log_type="I",
                         action_text="Сохранение маркировки клетки",
@@ -522,7 +537,9 @@ def cell_marking_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=SystemSettings)
 def system_settings_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="SystemSettings",
                         log_type="I",
                         action_text="Сохранение системных настроек",
@@ -535,7 +552,9 @@ def system_settings_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=CellImage)
 def cell_image_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="CellImage",
                         log_type="I",
                         action_text="Сохранение изображения клетки",
@@ -548,7 +567,9 @@ def cell_image_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Immunophenotyping)
 def immunophenotyping_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Immunophenotyping",
                         log_type="I",
                         action_text="Сохранение иммунофенотипа",
@@ -561,7 +582,9 @@ def immunophenotyping_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Medication)
 def medication_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Medication",
                         log_type="I",
                         action_text="Сохранение препарата",
@@ -574,7 +597,9 @@ def medication_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=PatientResearch)
 def patient_research_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="PatientResearch",
                         log_type="I",
                         action_text="Сохранение исследование пациента",
@@ -587,7 +612,9 @@ def patient_research_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=ResearchResult)
 def research_result_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="ResearchResult",
                         log_type="I",
                         action_text="Сохранение заключения",
@@ -600,11 +627,13 @@ def research_result_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=ResearchedObject)
 def research_object_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="ResearchedObject",
                         log_type="I",
                         action_text="Сохранение исследуемого объекта",
-                        description=f"Сохранение заключения {instance.conclusion}",
+                        description=f"Сохранение исследуемого объекта c типом ростка {instance.sprout_type}",
                         al_username="commita_bu",
                         status_type="S"
                         )
@@ -613,7 +642,9 @@ def research_object_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=DictCellsCharacteristics)
 def dict_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="DictCellsCharacteristics",
                         log_type="I",
                         action_text="Сохранение характеристики клетки",
@@ -626,7 +657,9 @@ def dict_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Terms)
 def terms_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Terms",
                         log_type="I",
                         action_text="Сохранение определения",
@@ -639,7 +672,9 @@ def terms_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Marking)
 def marking_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Marking",
                         log_type="I",
                         action_text="Сохранение маркировки",
@@ -652,7 +687,9 @@ def marking_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Marker)
 def marker_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Marker",
                         log_type="I",
                         action_text="Сохранение маркера",
@@ -665,7 +702,9 @@ def marker_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=Patient)
 def patient_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="Patient",
                         log_type="I",
                         action_text="Сохранение пациента",
@@ -678,7 +717,9 @@ def patient_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=MEPHIUser)
 def user_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="MEPHIUser",
                         log_type="I",
                         action_text="Сохранение/обновление информации о пользователе в базе данных",
@@ -691,7 +732,9 @@ def user_save(sender, instance, *args, **kwargs):
 
 @receiver(pre_save, sender=MEPHIUserCategory)
 def user_category_save(sender, instance, *args, **kwargs):
-    if param:
+    is_active = SystemParameters.objects.get(parameter_name="LOGGING").t_isactive
+    param = SystemParameters.objects.get(parameter_name="LOGGING").parameter_value_bool
+    if is_active:
         log = SystemLog(object_sender="MEPHIUserCategory",
                         log_type="I",
                         action_text="Сохранение новой категории пользователя в базе данных",
