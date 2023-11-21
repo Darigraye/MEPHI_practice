@@ -5,6 +5,10 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.core.validators import RegexValidator
 
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+
 
 def image_directory_path(instance, filename):
     return f"image/%Y/%m/%d/{instance.t_md5}-{filename}"
@@ -249,13 +253,7 @@ class PatientResearch(models.Model):
 
 
 class Medication(models.Model):
-    MEDICATION_TYPES = [
-        ('1', 'Тип 1'),
-        ('2', 'Тип 2'),
-        ('3', 'Тип 3')
-    ]
-
-    medication_type = models.CharField(_("Тип препарата"), choices=MEDICATION_TYPES, db_comment="Тип препарата")
+    medication_type = models.CharField(_("Тип препарата"), db_comment="Тип препарата")
     patient_research = models.ForeignKey(PatientResearch, related_name="medication", on_delete=models.PROTECT)
 
     def __str__(self):
@@ -287,6 +285,7 @@ class Immunophenotyping(models.Model):
 class CellImage(models.Model, SCD2ModelMixin):
     image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
     medication = models.ForeignKey(Medication, related_name="cellimage", on_delete=models.PROTECT)
+    patient = models.ForeignKey(Patient, related_name='cellimage', null=True, on_delete=models.PROTECT)
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
 
     def __str__(self):
@@ -338,16 +337,10 @@ class CellMarking(models.Model):
 
 
 class Cell(models.Model):
-    CELL_TYPES = [
-        ('1', 'Тип 1'),
-        ('2', 'Тип 2'),
-        ('3', 'Тип 3')
-    ]
-
     marking = models.ForeignKey(CellMarking, related_name="cell", on_delete=models.PROTECT)
     image = models.ImageField(upload_to=image_directory_path, blank=True, verbose_name='Фото')
     scale = models.IntegerField(_("Масштаб"), db_comment="Масштаб")
-    cell_type = models.CharField(_("Тип клетки"),  choices=CELL_TYPES, db_comment="Тип клетки")
+    cell_type = models.ForeignKey("CellType",  related_name="cell", on_delete=models.PROTECT)
 
     def __str__(self):
         return self.image
@@ -397,3 +390,71 @@ class MorphologicalResearch(models.Model):
         db_table_comment = "справочник морфологического исследования"
         verbose_name = _("морфологическое исследование")
         verbose_name_plural = _("морфологические исследования")
+
+
+class CellType(models.Model):
+    type_name = models.CharField(_("Название типа"), max_length=50, db_comment="Название типа")
+
+    def __str__(self):
+        return self.type_name
+
+    class Meta:
+        db_table = "al_cell_type"
+        db_table_comment = "справочник типов клеток"
+        verbose_name = _("тип клетки")
+        verbose_name_plural = _("типы клетки")
+
+
+class SystemLog(models.Model):
+    LOG_TYPE = [
+        ('I', "INFO"),
+        ('D', "DEBUG"),
+        ('E', "ERROR")
+    ]
+    STATUS_TYPE = [
+        ('S', 'START'),
+        ('F', 'FINISH')
+    ]
+
+    object_sender = models.CharField(_("Логируемый объект"), max_length=50, db_comment="Логируемый объект")
+    log_type = models.CharField(_("Тип лога"), max_length=1, choices=LOG_TYPE, db_comment="Тип лога")
+    action_text = models.CharField(_("Краткое описание действия"), max_length=100, db_comment="Краткое описание действия")
+    description = models.TextField(_("Полное описание действия"), blank=True, db_comment="Полное описание действия")
+    t_cdatetime = models.DateTimeField(_("Время создания записи"), auto_now_add=True, db_comment="Время создания записи")
+    al_username = models.CharField(_("Имя пользователя, инициирующего действие"), db_comment="Имя пользователя, инициирующего действие")
+    status_type = models.CharField(_("Статус выполнения"), max_length=1, choices=STATUS_TYPE, db_comment="Статус выполнения")
+
+    def __str__(self):
+        return f"{self.object_sender}-({self.log_type}): {self.action_text} {self.t_cdatetime}"
+
+    class Meta:
+        db_table = "al_log"
+        db_table_comment = "Журнал логирования"
+        verbose_name = _("Журнал логирования")
+        verbose_name_plural = _("Журнал логирования")
+
+
+class SystemParameters(models.Model):
+    parameter_name = models.CharField(_("Имя параметра"), max_length=50, db_comment="Имя параметра")
+    parameter_value = models.TextField(_("Значение, принимаемое параметром"), blank=True, db_comment="Значение, принимаемое параметром")
+    parameter_value_bool = models.BooleanField(_("Да/Нет"), blank=True, db_comment="Да/Нет")
+    t_cdatetime = models.DateTimeField(_("Дата создания параметра"), auto_now_add=True, db_comment="Дата создания параметра")
+    t_isactive = models.BooleanField(_("Параметр активен"), db_comment="Параметр активен")
+
+    class Meta:
+        db_table = "al_parameter"
+        db_table_comment = "Справочник системных параметров приложения"
+        verbose_name = _("Справочник системных параметров приложения")
+        verbose_name_plural = _("Справочник системных параметров приложения")
+
+
+@receiver(pre_save, sender=CellType)
+def cell_type_save(sender, instance, *args, **kwargs):
+    log = SystemLog(object_sender="CellType",
+                    log_type="I",
+                    action_text="Сохранение нового типа клетки",
+                    description=f"Сохранение нового типа клетки: {instance.type_name}",
+                    al_username="commita_bu",
+                    status_type="S"
+                    )
+    log.save()

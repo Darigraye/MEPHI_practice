@@ -1,0 +1,31 @@
+{% block content %}
+<form method="POST" novalidate>
+	{% csrf_token %}
+	<h2>Createe user</h2>
+
+		
+	{% for field in form %}
+	<p>
+		{% if field.errors %}
+		<ul class="errorlist">
+			{% for error in field.errors %}
+			<li>{{ error }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	 	{{ field.label_tag }} {{ field }}
+	</p>
+	{% endfor %}
+	<input type="submit" value="Register" />
+</form>
+
+Добавленные пациенты. Данил, тут крч я хочу, чтобы на одной странице мы могли как добавить пациента, так и посмотреть, уже добвленных, т.е. сначала идет форма, затем список пациентов
+
+	{% for o in object_list %}
+		{{o.pk}}  {{o.number_ill_history}} {{o.first_name}} {{o.last_name}} {{o.patronymic}} {{o.birthday}}
+	{% endfor %}
+
+	{% if not user.is_anonymous %}
+		<a href="{% url 'profile' user.username %}"> lol </a>
+	{% endif %}
+{% endblock content%}
