@@ -255,6 +255,7 @@ class PatientResearch(models.Model):
 class Medication(models.Model):
     medication_type = models.CharField(_("Тип препарата"), db_comment="Тип препарата")
     patient_research = models.ForeignKey(PatientResearch, related_name="medication", on_delete=models.PROTECT)
+    patient = models.ForeignKey(Patient, related_name="medication", null=True, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.medication_type

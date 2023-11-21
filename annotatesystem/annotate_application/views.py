@@ -58,7 +58,7 @@ class HomePageView(TemplateView):
 
 class CreatePatientView(CreateView, MetaDataMixin):
     form_class = CreatePatientForm
-    template_name = "general/create_user.html"
+    template_name = "functions/create_user.html"
     success_url = reverse_lazy('add_patient')
 
     def get_context_data(self, **kwargs):
@@ -71,7 +71,7 @@ class CreatePatientView(CreateView, MetaDataMixin):
 
 class CreateDiagnosisView(CreateView, MetaDataMixin):
     form_class = CreateDiagnosisForm
-    template_name = "general/create_diagnosis.html"
+    template_name = "functions/create_diagnosis.html"
     success_url = reverse_lazy('add_diagnosis')
 
     def get_context_data(self, **kwargs):
@@ -84,7 +84,7 @@ class CreateDiagnosisView(CreateView, MetaDataMixin):
 
 class CreateCellTypeView(CreateView, MetaDataMixin):
     form_class = CreateCellTypeForm
-    template_name = "general/create_cell_type.html"
+    template_name = "functions/create_cell_type.html"
     success_url = reverse_lazy('add_cell_type')
 
     def get_context_data(self, **kwargs):
@@ -97,7 +97,7 @@ class CreateCellTypeView(CreateView, MetaDataMixin):
 
 class AddImageView(CreateView, MetaDataMixin):
     form_class = AddImageForm
-    template_name = "general/create_image.html"
+    template_name = "functions/create_image.html"
     success_url = reverse_lazy('add_image')
 
     def get_context_data(self, **kwargs):
@@ -110,11 +110,24 @@ class AddImageView(CreateView, MetaDataMixin):
 
 class AddMedicationView(CreateView, MetaDataMixin):
     form_class = AddMedicationForm
-    template_name = "general/create_medication.html"
+    template_name = "functions/create_medication.html"
     success_url = reverse_lazy('add_medication')
 
     def get_context_data(self, **kwargs):
         kwargs['object_list'] = Medication.objects.all()
+        context = super().get_context_data(**kwargs)
+        additional_context = super().get_user_context()
+
+        return dict(list(context.items()) + list(additional_context.items()))
+
+
+class AddResearchView(CreateView, MetaDataMixin):
+    form_class = AddMedicationForm
+    template_name = "functions/create_medication.html"
+    success_url = reverse_lazy('add_medication')
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = PatientResearch.objects.all()
         context = super().get_context_data(**kwargs)
         additional_context = super().get_user_context()
 

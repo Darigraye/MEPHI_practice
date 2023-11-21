@@ -1,23 +1,75 @@
 {% extends '../general/base.html' %}
+{% load static %}
 {% block content %}
+<!doctype html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+        <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
+        <title>Show profile page</title>
+    </head>
+    <body class="profile_main_page">
+        <section>
+            <div class="container profile_card my-5" style="height: 500px;">
+                <div class="row h-100">
+                    <div class="col-5 gradient-custom-3 d-flex flex-column align-items-center justify-content-center">
+                        <div class="row mt-1">
+                            <div class="col-12 d-flex justify-content-center">
+                                <label class="pod_text">{{caregory}}</label>
+                            </div>
+                        </div>
 
-<h1>Профиль {{ user.username }}</h1>
-    имя: {{user.first_name}}
-    <br>
-    <br>
-    фамилия: {{user.last_name}}
-    <br>
-    <br>
-    отчество: {{user.patronymic}}
-    <br>
-    <br>
-    адрес электронной почты: {{ user.email }}
-    <br>
-    <br>
-    тип пользователя: {{ caregory }}
-    <br>
-    <br>
-    номер телефона: {{ user.phone_number }}
-    <p><a href="{% url 'logout' %}"><button type="button">Выход</a></p>
+                        <div class="row mt-3">
+                            <div class="col-12 d-flex justify-content-center">
+                                <img src="{% static 'pictures/user.png' %}" class="bi" width="200" height="200" alt="User-Profile-Image">
+                            </div>
+                        </div>
+                        <div class="row mt-1">
+                            <div class="col-12 d-flex justify-content-center">
+                                <label class="pod_text">{{user.first_name}}</label>
+                                <label class="pod_text ms-3">{{user.last_name}}</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-center">
+                                <label class="pod_text">{{user.patronymic}}</label>
+                            </div>
+                        </div>
 
-{% endblock %}
+
+                    </div>
+                    <div class="col-7 profile_info d-flex flex-column justify-content-start">
+                        <div class="row mt-4 w-100">
+                            <div class="col-12 d-flex flex-column justify-content-start">
+                                <label class="zg_text ms-3">Контактная информация</label>
+                                <hr class="ms-3" size="2" width="100%" align="center" color="black">
+                            </div>
+                        </div>
+
+                        <div class="row w-100 d-flex">
+                            <div class="col-6 d-flex flex-column justify-content-start">
+                                <label class="zg_text ms-3">Email</label>
+                                <label class="com_text ms-3">{{user.email}}</label>
+                            </div>
+                            <div class="col-6 d-flex flex-column justify-content-start">
+                                <label class="zg_text ms-3">Телефон</label>
+                                <label class="com_text ms-3">{{user.phone_number}}</label>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+        {% endblock %}
+    </body>
+</html>
+
+
