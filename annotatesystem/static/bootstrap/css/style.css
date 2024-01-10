@@ -1,0 +1,84 @@
+:root {
+    --color1: #4bb462;
+    --color2: #064213;
+    --color3: #eee;
+    --color4: #fff;
+}
+
+.login_main_page {
+    background: var(--color3);
+}
+
+.login_card {
+    background: var(--color4);
+    border-top-right-radius: var(--bs-border-radius)!important;
+    border-bottom-right-radius: var(--bs-border-radius)!important;
+    border-top-left-radius: var(--bs-border-radius)!important;
+    border-bottom-left-radius: var(--bs-border-radius)!important;
+}
+
+.gradient-custom-2 {
+    background: var(--color1);
+    background: -moz-linear-gradient(left, var(--color1) 0%, var(--color2) 100%);
+    background: -webkit-linear-gradient(left, var(--color1) 0%, var(--color2) 100%);
+    background: linear-gradient(to right, var(--color1) 0%, var(--color2) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=var(--color1), endColorstr=var(--color2), GradientType=1);
+    border-top-right-radius: var(--bs-border-radius)!important;
+    border-bottom-right-radius: var(--bs-border-radius)!important;
+    border-top-left-radius: var(--bs-border-radius)!important;
+    border-bottom-left-radius: var(--bs-border-radius)!important;
+}
+
+
+.itd_enter_btn {
+    background: var(--color1);
+    --bs-btn-border-color: var(--color1);
+    --bs-btn-hover-bg: #fff;
+    --bs-btn-hover-color: var(--color1);
+    --bs-btn-hover-border-color: var(--color1);
+    --bs-btn-active-bg: #fff;
+    --bs-btn-active-color: var(--color1);
+    --bs-btn-active-border-color: var(--color1);
+}
+
+.itd_reg_btn {
+    color: var(--color1);
+    border-color: var(--color1);
+    --bs-btn-hover-bg: var(--color1);
+    --bs-btn-hover-border-color: var(--color1);
+    --bs-btn-active-bg: var(--color1);
+    --bs-btn-active-border-color: var(--color1);
+}
+
+.text-center {
+    font-family:'Unbounded';
+}
+
+.plain_text {
+    font-family:'Unbounded';
+    font-size: 1.2rem;
+}
+
+.registration_main_page {
+    background: var(--color1);
+    background: -moz-linear-gradient(left, var(--color1) 0%, var(--color2) 100%);
+    background: -webkit-linear-gradient(left, var(--color1) 0%, var(--color2) 100%);
+    background: linear-gradient(to right, var(--color1) 0%, var(--color2) 100%);
+}
+
+.registration_card {
+    background: var(--color4);
+    border-top-right-radius: var(--bs-border-radius)!important;
+    border-bottom-right-radius: var(--bs-border-radius)!important;
+    border-top-left-radius: var(--bs-border-radius)!important;
+    border-bottom-left-radius: var(--bs-border-radius)!important;
+}
+
+.itd_shap_btn {
+    color: var(--color1);
+    border-color: var(--color1);
+    --bs-btn-hover-bg: var(--color1);
+    --bs-btn-hover-border-color: var(--color1);
+    --bs-btn-active-bg: var(--color1);
+    --bs-btn-active-border-color: var(--color1);
+}
